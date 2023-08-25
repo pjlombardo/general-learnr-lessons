@@ -88,9 +88,12 @@ Notice we accomplished this by `+` (adding) `geom_point()` (a point geometry) to
 Before continuing to the next topic, please explore this basic "painting" by changing around the variables you use for `x` and `y`. Specifically, what happens when you set one of your axes to the *categorical* variable `Species`. What happens, and why?
 
 #### Exercise:
-In the block below, write the additional code to add the point geometry to the plot.  Then, experiment with different variables for the `x` and `y` aesthetics.
+In the block below, 
+
+* practice writing the additional code to add the point geometry to the plot;
+* then, experiment with different variables for the `x` and `y` aesthetics.
+
 ```{r ggplot-geom-explore, exercise=TRUE, exercise.lines = 6}
-# Change the variables specified in the x and y aesthetics
 ggplot(data = iris, 
        aes(x = Petal.Length,
            y= Sepal.Width))
@@ -150,7 +153,7 @@ Notice that when adding a color aesthetic to the plot, a legend is automatically
 
 
 ## Finishing touches
-
+Show how to add axis labels, and then reference another tutorial that teaches them about configuring axes for continuous variable, and then for categorical variables.
 
 ## Review Quiz
 
