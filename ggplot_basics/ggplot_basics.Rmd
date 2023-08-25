@@ -1,0 +1,193 @@
+---
+title: "Tutorial"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(ggplot2)
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+
+## The `ggplot` approach
+
+### A quick lesson from art
+
+***Have you ever watched Bob Ross paint?***
+
+You should! Here is an example of someone painting in the style of Bob Ross on an iPad:
+
+![(Image courtesy of instagram: [procreatewithbobross](http://www.instagram.com/procreatewithbobross))](images/bob-ross-ex.gif)<br></br>
+
+Notice how the painting comes together in steps, building to a beautiful final product:
+
+1. From a blank canvas, a black foreground and light-blue background with clouds add simple dimension;<br></br>
+2. Next, the mountains add significant substance to the painting;<br></br>
+3. Embellishments further fill out the scene, like the different color snow on the east and west sides of the mountain, or the small forest at the base;<br></br>
+4. Finally, color and detail fill the foreground finishing the work.
+
+### "Painting" a plot
+When we use `ggplot2` to make our graphics, we will take the artistic approach, proceeding incrementally.  Starting with a background, we add basic structure, then substance, embellishments, and finish with important details.  We will work sequentially, adding and modifying until our final plot makes us happy, like Bob's trees.
+
+![(Images made with R and compiled into a gif via [ezgif.com](https://ezgif.com/maker))](images/plot-ross-ex.gif)<br></br>
+
+Notice how this plot above is built in steps:
+
+1. From a blank gray canvas, we add variables (e.g. Sepal.Width) to the axes to provide simple dimension;<br></br>
+2. Next, points create a scatter plot, demonstrating the relationship between our variables;<br></br>
+3. Embellishments add to the plot, like coloring the dots according to the species of iris;<br></br>
+4. Finally, we adjust our axes labels and scales, and add titles and themes to finish the plot.
+<br></br>
+
+**In the next topic, we'll walk through the incremental steps required to build this very plot!**
+
+## Painting a plot, Bob Ross style
+To get our a fresh canvas, we simply start with the command `ggplot()`; try it out for yourself
+```{r base-background, exercise=TRUE}
+ggplot()
+```
+
+### Adding simple dimensions
+Overview the `iris` data frame; focus on two measurements and a categorical variable.
+```{r,echo=F}
+head(iris)
+```
+
+Assigning axes using "aesthetics", or `aes()`
+
+Setting `data =iris` allows us to draw data from the `iris` dataframe. Let's add some simple dimension to our plots by specifying which variables we want to appear on our axes.  Replace the `...` with the variables of interest:
+
+```{r ggplot-axes-aes, exercise=TRUE, exercise.lines = 5}
+ggplot(data = iris, 
+       aes(x = ...,
+           y= ...))
+```
+
+```{r ggplot-axes-aes-hint}
+ggplot(data = iris, 
+       aes(x = Petal.Length,
+           y= Sepal.Width))
+```
+
+### Adding substance
+To highlight the relationship between the variables on our axes, we use a `geometry`.  In the case where these are both quantitative variables, we will want to use a "point", or dot, to represent each flower in the data frame.
+
+Let's *add* the point geometry to our plot. Run the code below!
+```{r ggplot-geom, exercise=TRUE}
+ggplot(data = iris, 
+       aes(x = Petal.Length,
+           y= Sepal.Width)) +
+    geom_point()
+```
+Notice we accomplished this by `+` (adding) `geom_point()` (a point geometry) to the canvas we already set up.
+
+* *Note:* the plus sign **must come on the same line** as the last element you added to your plot.
+
+Before continuing to the next topic, please explore this basic "painting" by changing around the variables you use for `x` and `y`. Specifically, what happens when you set one of your axes to the *categorical* variable `Species`. What happens, and why?
+
+#### Exercise:
+In the block below, write the additional code to add the point geometry to the plot.  Then, experiment with different variables for the `x` and `y` aesthetics.
+```{r ggplot-geom-explore, exercise=TRUE, exercise.lines = 6}
+# Change the variables specified in the x and y aesthetics
+ggplot(data = iris, 
+       aes(x = Petal.Length,
+           y= Sepal.Width))
+
+
+
+```
+
+```{r ggplot-geom-explore-hint-1}
+# Change the variables specified in the x and y aesthetics
+ggplot(data = iris, 
+       aes(x = Petal.Length,
+           y= Sepal.Width))+
+    geom_point()
+```
+
+```{r ggplot-geom-explore-hint-2}
+# Change the variables specified in the x and y aesthetics
+ggplot(data = iris, 
+       aes(x = Species,
+           y= Sepal.Width))+
+    geom_point()
+```
+
+```{r ggplot-geom-explore-hint-3}
+# Change the variables specified in the x and y aesthetics
+ggplot(data = iris, 
+       aes(x = Petal.Length,
+           y= Species))+
+    geom_point()
+```
+
+## Adding some happy little trees
+### Plot embellishments
+Here is our plot so far
+```{r scatter-plot, echo=T, fig.align='center',fig.height=4,fig.width=4}
+ggplot(data = iris, 
+       aes(x = Petal.Length,
+           y= Sepal.Width))+
+    geom_point()
+```
+
+Suppose, however, we'd like to color these points according the `Species` of iris. 
+
+> **Important Concept**: Any component of the plot that depends on data *must be assigned to an "aesthetic", so inside `aes()`*.
+
+Below is an example of adding an aesthetic to the point geometry that accomplishes our goal. Since the aesthetic is applied to the point geometry, one approach is to add `aes(color=Species)` inside our point geometry code. Inspect the block below and try running it.
+```{r ggplot-color-aes, exercise=TRUE, exercise.lines=5}
+ggplot(data = iris, 
+       aes(x = Petal.Length,
+           y= Sepal.Width)) +
+    geom_point(aes(color=Species))
+```
+**Explore:** Try changing the color aesthetic to depend on a different variable, like `Sepal.Width`.  What happens? Can you explain?
+
+Notice that when adding a color aesthetic to the plot, a legend is automatically created and appended to the side.
+
+
+## Finishing touches
+
+
+## Review Quiz
+
+### Exercise with Hint
+
+*Here's an exercise where the chunk is pre-evaluated via the `exercise.eval` option (so the user can see the default output we'd like them to customize). We also add a "hint" to the correct solution via the chunk immediate below labeled `print-limit-hint`.*
+
+Modify the following code to limit the number of rows printed to 5:
+
+```{r print-limit, exercise=TRUE, exercise.eval=TRUE}
+mtcars
+```
+
+```{r print-limit-hint}
+head(mtcars)
+```
+
+### Quiz
+
+*You can include any number of single or multiple choice questions as a quiz. Use the `question` function to define a question and the `quiz` function for grouping multiple questions together.*
+
+Some questions to verify that you understand the purposes of various base and recommended R packages:
+
+```{r quiz}
+quiz(
+  question("Which package contains functions for installing other R packages?",
+    answer("base"),
+    answer("tools"),
+    answer("utils", correct = TRUE),
+    answer("codetools")
+  ),
+  question("Which of the R packages listed below are used to create plots?",
+    answer("lattice", correct = TRUE),
+    answer("tools"),
+    answer("stats"),
+    answer("grid", correct = TRUE)
+  )
+)
+```
+
