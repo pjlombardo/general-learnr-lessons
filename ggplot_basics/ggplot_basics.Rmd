@@ -7,6 +7,7 @@ runtime: shiny_prerendered
 ```{r setup, include=FALSE}
 library(learnr)
 library(ggplot2)
+mtcars$am <-as.
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
@@ -44,20 +45,28 @@ Notice how this plot above is built in steps:
 **In the next topic, we'll walk through the incremental steps required to build this very plot!**
 
 ## Painting a plot, Bob Ross style
+
 To get our a fresh canvas, we simply start with the command `ggplot()`; try it out for yourself
 ```{r base-background, exercise=TRUE}
 ggplot()
 ```
 
 ### Adding simple dimensions
-Overview the `iris` data frame; focus on two measurements and a categorical variable.
+For our first plot, we will use the `iris` data frame.  It contains measurements from 150 iris flowers, covering three different species: setosa, versicolor, and virginica.  For each flower, we record the species of iris, as well as length and width measurements of the flower's sepals and petals. 
+
+Here is a sneak peak of the data frame.
 ```{r,echo=F}
-head(iris)
+head(iris,3)
 ```
 
-Assigning axes using "aesthetics", or `aes()`
+When we know the data frame from which we want to build our plot (and it's in `tidy`-format, more on this later), we can add this to the code for out plot.  
 
-Setting `data =iris` allows us to draw data from the `iris` dataframe. Let's add some simple dimension to our plots by specifying which variables we want to appear on our axes.  Replace the `...` with the variables of interest:
+In our painting analogy, this is like putting pain on a pallete. Setting `data = iris` allows us to pull data from the `iris` data frame and use it to build the plot. Let's add some simple dimension to our blank canvas by
+
+1. specifying a data frame (painting pallete)
+2. specifying which variables we want to appear on our axes.
+
+In the code below, replace the `...` with two variables of interest; specifically, put `Sepal.Width` on the $y$-axis and `Petal.Length` on the $x$-axis:
 
 ```{r ggplot-axes-aes, exercise=TRUE, exercise.lines = 5}
 ggplot(data = iris, 
@@ -68,22 +77,22 @@ ggplot(data = iris,
 ```{r ggplot-axes-aes-hint}
 ggplot(data = iris, 
        aes(x = Petal.Length,
-           y= Sepal.Width))
+           y = Sepal.Width))
 ```
 
 ### Adding substance
-To highlight the relationship between the variables on our axes, we use a `geometry`.  In the case where these are both quantitative variables, we will want to use a "point", or dot, to represent each flower in the data frame.
+To highlight the relationship between the variables on our axes, we use a `geometry`.  In the case where we work with two quantitative variables, we often use a "point", or dot, to represent each flower in the data frame.
 
 Let's *add* the point geometry to our plot. Run the code below!
 ```{r ggplot-geom, exercise=TRUE}
 ggplot(data = iris, 
        aes(x = Petal.Length,
-           y= Sepal.Width)) +
+           y = Sepal.Width)) +
     geom_point()
 ```
 Notice we accomplished this by `+` (adding) `geom_point()` (a point geometry) to the canvas we already set up.
 
-* *Note:* the plus sign **must come on the same line** as the last element you added to your plot.
+> *Important Note:* the plus sign **must be on the same line** as the last element you added to your plot; then hit return to add your next element.
 
 Before continuing to the next topic, please explore this basic "painting" by changing around the variables you use for `x` and `y`. Specifically, what happens when you set one of your axes to the *categorical* variable `Species`. What happens, and why?
 
@@ -97,9 +106,6 @@ In the block below,
 ggplot(data = iris, 
        aes(x = Petal.Length,
            y= Sepal.Width))
-
-
-
 ```
 
 ```{r ggplot-geom-explore-hint-1}
@@ -132,7 +138,7 @@ Here is our plot so far
 ```{r scatter-plot, echo=T, fig.align='center',fig.height=4,fig.width=4}
 ggplot(data = iris, 
        aes(x = Petal.Length,
-           y= Sepal.Width))+
+           y = Sepal.Width))+
     geom_point()
 ```
 
@@ -144,53 +150,139 @@ Below is an example of adding an aesthetic to the point geometry that accomplish
 ```{r ggplot-color-aes, exercise=TRUE, exercise.lines=5}
 ggplot(data = iris, 
        aes(x = Petal.Length,
-           y= Sepal.Width)) +
+           y = Sepal.Width)) +
     geom_point(aes(color=Species))
 ```
-**Explore:** Try changing the color aesthetic to depend on a different variable, like `Sepal.Width`.  What happens? Can you explain?
 
-Notice that when adding a color aesthetic to the plot, a legend is automatically created and appended to the side.
+```{r ggplot-color-aes-hint-1}
+# we could also add the aesthetic inside the ggplot() component
+# but this means all geometries that follow would have this aesthetic.
+# This approach makes color=Species a "global" aesthetic
+# The code below also generates the same plot:
+ggplot(data = iris, 
+       aes(x = Petal.Length,
+           y = Sepal.Width,
+           color = Species)) +
+    geom_point()
+```
+**Explore:** Try changing the color aesthetic to depend on a different variable, like `Sepal.Width`.  What happens? Can you explain *why* this happens?
+
+Notice that when adding a color aesthetic to the plot, a legend is automatically created and appended to the side.^[We can change the position of the legend; another time, perhaps.]
 
 
 ## Finishing touches
-Show how to add axis labels, and then reference another tutorial that teaches them about configuring axes for continuous variable, and then for categorical variables.
 
-## Review Quiz
+The `ggplot2` package allows for nearly endless modifications and finishing touches.  Some of these include:
 
-### Exercise with Hint
+* adjusting the units of our axes and changing which number divisions show
+* adding trend lines to scatter plots
+* adding text and shape annotations on top of the plot
+* applying general [plotting themes](https://ggplot2.tidyverse.org/reference/ggtheme.html) 
 
-*Here's an exercise where the chunk is pre-evaluated via the `exercise.eval` option (so the user can see the default output we'd like them to customize). We also add a "hint" to the correct solution via the chunk immediate below labeled `print-limit-hint`.*
+In the interests of time and attention span, however, we will consider one more useful step: *adding axis labels to the plot*.
 
-Modify the following code to limit the number of rows printed to 5:
+Since we are adding a layer, we put a `+` after our last line of code. Then, after hitting enter to get to the next line, we will use the `labs()` element to change our axes. 
 
-```{r print-limit, exercise=TRUE, exercise.eval=TRUE}
-mtcars
+Let's see if your `ggplot2` intuition is developing. Run the code below, and then make the necessary changes provide meaningful labels to the axes and the title.
+
+```{r ggplot-axis-labels, exercise=TRUE, exercise.lines=8}
+ggplot(data = iris, 
+       aes(x = Petal.Length,
+           y = Sepal.Width)) +
+    geom_point(aes(color=Species)) + 
+    labs(x=" some x label",
+         y="some y label",
+         title="title anyone?")
 ```
 
-```{r print-limit-hint}
-head(mtcars)
+```{r ggplot-axis-labels-hint-1}
+# here is one option
+ggplot(data = iris, 
+       aes(x = Petal.Length,
+           y = Sepal.Width)) +
+    geom_point(aes(color=Species)) + 
+    labs(x="Petal length in inches",
+         y="Sepal width in inches",
+         title="Comparing sepal width and petal length among species of irises")
 ```
 
-### Quiz
 
-*You can include any number of single or multiple choice questions as a quiz. Use the `question` function to define a question and the `quiz` function for grouping multiple questions together.*
+## Checking your understanding!
+In this final section, we review with a couple of questions about what we have learned in this lesson. Feel free to flip back through the exercises and instructions in the previous topics.  In the last block, I challenge you to recreate a new plot based on the `mtcars` data frame!
 
-Some questions to verify that you understand the purposes of various base and recommended R packages:
+You may want to try running some R code as you answer questions, so please use the box below to do so!
+```{r ggplot-testing, exercise=TRUE, exercise.lines=10}
+# Place your test code here
 
-```{r quiz}
-quiz(
-  question("Which package contains functions for installing other R packages?",
-    answer("base"),
-    answer("tools"),
-    answer("utils", correct = TRUE),
-    answer("codetools")
-  ),
-  question("Which of the R packages listed below are used to create plots?",
-    answer("lattice", correct = TRUE),
-    answer("tools"),
-    answer("stats"),
-    answer("grid", correct = TRUE)
+
+```
+
+
+### Review Quiz 
+
+**Question 1**
+```{r question-1}
+  question("Which code below correctly associates the iris data frame to the plot we want to build?",
+    answer("ggplot() + iris"),
+    answer("ggplot() + data = iris"),
+    answer("ggplot(data = iris)", correct = TRUE),
+    answer("iris(ggplot())"),
+    allow_retry = T,
+    random_answer_order = T,
+    incorrect = paste(random_encouragement(),"See the first topic: Painting a plot, Bob Ross Style"),
+    post_message = random_praise()
   )
-)
 ```
 
+**Question 2**
+```{r question-2}
+    question("Assume we're working with the `mtcars` data frame. Which code below correctly puts the `mpg` variable on the x axis and the `hp` variable on the y axis?",
+    answer("True", correct = TRUE),
+    answer("False1"),
+    answer("False2"),
+    answer("False3"),
+    allow_retry = T,
+    random_answer_order = T,
+    incorrect = random_encouragement(),
+    post_message = random_praise()
+  )
+```
+
+
+**Question 3**: Please refer to the code block below to answer this question.
+
+```
+ggplot(data = mtcars, aes(x=mpg,y=hp))
++
+geom_point()
+```
+
+```{r question-3}
+question("True or False: the command written in Code Block 1 would result in an error.",
+    answer("True", correct = TRUE),
+    answer("False"),
+    allow_retry = T,
+    random_answer_order = T,
+    incorrect = paste(random_encouragement(),"See the 'Important Note' in the first topic: Painting a plot."),
+    post_message = random_praise()
+  )
+```
+
+**Question 4**
+```{r question-4}
+    question("Which of the following statements are true? Select all that apply",
+    answer("Plot elements that depend on data are called 'aesthetics' and must appear inside aes()", correct = TRUE),
+    answer("A categorical variable, like Species in the iris data frame, cannot appear as the aesthetic for the x axis."),
+    answer("The labs() element helps you assign labels to your axes and set a title for the plot.", correct = TRUE),
+    answer("The point geometry, geom_point(), is the only geometry that ggplot can use."),
+    allow_retry = T,
+    random_answer_order = T,
+    incorrect = paste(random_encouragement(),"See the 'Important Note' in the first topic: Painting a plot."),
+    post_message = random_praise()
+  )
+```
+
+***
+
+### Final Exercise
+Using what you have learned from this tutorial, please use `ggplot2` to recreate the following plot!
