@@ -1,5 +1,5 @@
 ---
-title: "Tutorial"
+title: "Basics of `ggplot2`"
 output: learnr::tutorial
 runtime: shiny_prerendered
 ---
@@ -7,7 +7,7 @@ runtime: shiny_prerendered
 ```{r setup, include=FALSE}
 library(learnr)
 library(ggplot2)
-mtcars$am <-as.
+mtcars$am <-as.factor(ifelse(mtcars$am==0,"automatic","manual"))
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
@@ -77,7 +77,7 @@ ggplot(data = iris,
 ```{r ggplot-axes-aes-hint}
 ggplot(data = iris, 
        aes(x = Petal.Length,
-           y = Sepal.Width))
+           y = ...))
 ```
 
 ### Adding substance
@@ -224,7 +224,7 @@ You may want to try running some R code as you answer questions, so please use t
 ```{r question-1}
   question("Which code below correctly associates the iris data frame to the plot we want to build?",
     answer("ggplot() + iris"),
-    answer("ggplot() + data = iris"),
+    answer("ggplot() + (data = iris)"),
     answer("ggplot(data = iris)", correct = TRUE),
     answer("iris(ggplot())"),
     allow_retry = T,
@@ -237,13 +237,18 @@ You may want to try running some R code as you answer questions, so please use t
 **Question 2**
 ```{r question-2}
     question("Assume we're working with the `mtcars` data frame. Which code below correctly puts the `mpg` variable on the x axis and the `hp` variable on the y axis?",
-    answer("True", correct = TRUE),
-    answer("False1"),
-    answer("False2"),
-    answer("False3"),
+    answer("<pre>ggplot(data = mtcars,
+       aes(x=mpg, y=hp))</pre>", correct = TRUE),
+    answer("<pre>ggplot(data = mtcars,
+       aes(x=hp, y=mpg))</pre>"),
+    answer("<pre>ggplot(data = mtcars)+
+       aes(x=mpg, y=hp)</pre>"),
+    answer("<pre>ggplot(data = mtcars,
+       x=mpg,
+       y=hp)</pre>"),
     allow_retry = T,
     random_answer_order = T,
-    incorrect = random_encouragement(),
+    incorrect = paste(random_encouragement(),"See the first topic: Painting a plot, Bob Ross Style"),
     post_message = random_praise()
   )
 ```
@@ -285,4 +290,95 @@ question("True or False: the command written in Code Block 1 would result in an 
 ***
 
 ### Final Exercise
-Using what you have learned from this tutorial, please use `ggplot2` to recreate the following plot!
+For the final exercise, I challenge you to *recreate* a plot using a new data frame and  what you have learned from this tutorial. Our data will come from the `mtcars` data frame, which collected information on a collection of cars featured in the 1974 *Motor Trend* magazine. 
+
+The `mtcars` data frame contains the following variables (among others):
+
+* `mpg`	Miles/(US) gallon
+* `cyl`	Number of cylinders
+<!-- * `disp`	Displacement (cu.in.) -->
+* `hp`	Gross horsepower
+<!-- * `drat`	Rear axle ratio -->
+* `wt`	Weight (1000 lbs)
+* `qsec`	1/4 mile time
+<!-- * `vs`	Engine (0 = V-shaped, 1 = straight) -->
+* `am`	Transmission ("automatic","manual")
+<!-- * `gear`	Number of forward gears -->
+<!-- * `carb`	Number of carburetors -->
+
+
+
+#### Use `ggplot2` to recreate the following plot!<br></br>
+```{r final-plot, echo=F,fig.align='center',fig.width=6,fig.height=3}
+ggplot(data = mtcars,
+       aes(x=wt, y=mpg, color=am))+
+    geom_point()+
+    labs(x="Weight (in 1000 lbs.)",
+         y="Miles per gallon",
+         title="Comparing gas mileage and weight by transmission type"
+    )
+```
+
+```{r final-plot-exercise, exercise=TRUE, exercise.lines=10}
+# build your ggplot() code here and remember,
+# do it in steps, checking the result as you build!
+
+
+
+
+
+```
+
+```{r final-plot-exercise-hint-1}
+ggplot(data = mtcars,
+       aes(x= ...,
+           y= ...))
+```
+
+```{r final-plot-exercise-hint-2}
+ggplot(data = mtcars,
+       aes(x= wt,
+           y= mpg)) +
+    geom_...
+```
+
+```{r final-plot-exercise-hint-3}
+ggplot(data = mtcars,
+       aes(x= wt,
+           y= mpg)) +
+    geom_point()
+```
+
+```{r final-plot-exercise-hint-4}
+ggplot(data = mtcars,
+       aes(x= wt,
+           y= mpg)) +
+    geom_point(aes(color=am))
+```
+
+
+```{r final-plot-exercise-hint-5}
+ggplot(data = mtcars,
+       aes(x= wt,
+           y= mpg)) +
+    geom_point(aes(color=am))+
+    labs(x="...",
+         y="...",
+         title="...")
+```
+
+## Conclusion
+#### Great work today! 
+
+We learned how to sequentially build a basic plot using the `ggplot2` package. This involved:
+
+* Making a blank canvas and ssociating a data frame with `ggplot(data= df)`
+* Adding variables to axes with `aes()`
+* Adding geometries, like `geom_point()`, and
+* Adding axis labels with `labs()`.
+    
+The `ggplot2` package can do even more, and has even more flexibility when combined with other packages in the `tidyverse`.  Please check out these additional lessons:
+
+* put lesson links here.
+
+
