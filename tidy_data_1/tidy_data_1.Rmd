@@ -1,0 +1,189 @@
+---
+title: "What is `tidy` data?"
+author: (created by P. Lombardo)
+output: learnr::tutorial
+runtime: shiny_prerendered
+bibliography: references.bib
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+knitr::opts_chunk$set(echo = FALSE)
+
+df1<- iris %>% mutate(flower_ID = 1:150) %>%
+    pivot_longer(
+        cols=c("Sepal.Length","Sepal.Width"),
+        names_to ="Sepal.Measurement.Type",
+        values_to = "Sepal.Measurement"
+    ) %>% select(flower_ID, Species, Sepal.Measurement.Type, Sepal.Measurement, Petal.Length, Petal.Width)
+
+df2<-data.frame(setosa = iris$Sepal.Length[1:50],
+           versicolor = iris$Sepal.Length[51:100],
+           virginica = iris$Sepal.Length[101:150])
+
+df3<-iris %>% mutate(flower_ID=1:150) %>%
+    unite("Sepal Length_Width",Sepal.Length:Sepal.Width,
+          sep="_") %>%
+    select(flower_ID, `Sepal Length_Width`, Petal.Length, Petal.Width)
+```
+
+## Introducing `tidy` data
+Many workflows in R, from plotting to running $t$-tests, expect the format of our data to be "tidy."  Right... what is that again?
+
+***Tidy data is simply a specific way of organizing a data set.***
+
+***
+***
+
+Hadley Wickham^[Hadley Wickham is one of the founders and creators of the `tidyverse` packages we use so often. He also co-wrote a wonderful free e-book; see the references.] defines tidy data format as having three requirements (@Wickham2017R):
+
+> 1. Every *row* corresponds to an observation (i.e., it represents the measurements for a single experimental unit)
+> 2. Every variable (or measurement) appears in its own **column** 
+> 3. Each cell (row/column pair) contains at most one value
+
+***
+***
+
+*Remark*: For requirement 3, I say "at most one value" to account for potential missing data.
+
+Let's take a look at a data set that is `tidy` format already, and explain why. Using what you know of `R`, write code to show the "head" of the `iris` data frame (i.e. the first 6 rows).
+```{r iris-head, exercise=TRUE}
+# place code here
+```
+
+```{r iris-head-hint}
+# place code here
+head(iris)
+```
+
+Notice that 
+
+* each *row* corresponds to a single iris collected for this data set;
+* the five columns represent five different measurements (or variables) taken on each flower: the sepal length, sepal width, petal length, petal width, and the species of that flower;
+* inside each cell there is only one value.
+
+The `iris` data frame is already in tidy format.
+
+### Practice Exercise
+Consider the `airquality` data frame:<br></br>
+
+```{r echo = F}
+airquality %>%
+    select(Day, Month, Temp, Ozone, Solar.R, Wind) %>%
+    head(10)
+```
+
+```{r question-tidy-yes}
+
+question("Is the airquality data frame in tidy format?",
+answer("Yes.", correct = TRUE),
+answer("No."),
+answer("tidy format is impossible to achieve for most data."),
+allow_retry = T,
+    random_answer_order = T,
+    incorrect = paste(random_encouragement(),"Consider the three requirements above."),
+    post_message = random_praise()
+)
+
+```
+
+## Non-`tidy` data examples
+Now familiar with tidy-data, let's see some examples of "untidy" data. Let's consider some untidy ways of representing the `iris` data set, since we have already become acquainted with that.  Where possible, we have added `flower_ID` as a variable so that we can track each flower when necessary. (This variable wouldn't be necessary for tidy data, because we *know* each row is a unique flower.)
+
+In the next three sections, we will explore versions of the `iris` data frame that have been reshaped to break one of our three tidy conditions.  The three versions are stored under the names `df1`, `df2`, and `df3`.
+
+
+The challenge is to look at the way the data is structured, and then write your own clear way of explaining why they are not in tidy format!
+
+Ready to move on?
+
+## Violation 1:
+Our ***first*** tidy requirement is that each row of the data set corresponds to a single observation; all the measurements for a single experimental unit.
+
+Consider `df1`, an "untidy" way to represent the `iris` data frame. Use the code block below to explore the data frame called `df1` and try to come up with a clear explanation for *why* it is not in tidy format.
+
+(If you cannot see all the columns, you can use the click on the black triangle in the upper-right of the data frame, make the font on your web-browser smaller, or widen the web-browser window)
+```{r df1-exercise, exercise=TRUE,exercise.lines=5}
+# Explore df1 here;
+```
+
+```{r df1-exercise-hint}
+head(df1)
+```
+
+Before seeing an explanation, can you explain in your own words how we violate our first condition for tidy format?
+
+```{r question-untidy-1}
+question("Ready to see an explanation?",
+answer("Yes.", correct = TRUE),
+post_message = "Look at the `flower_ID` variable; the first two rows have the same flower ID number!  Upon closer inspection, we can see the sepal measurements for each flower are spread over two rows, with the first row recording sepal length and the next row recording sepal width. For example, the first two rows of the data frame above correspond to a single flower, but the sepal length is in row 1 while sepal width is in row 2.  For tidy data, each flower, and all of its measurements, should be in a single row."
+)
+```
+
+
+## Violation 2:
+Recall that our second tidy requirement asks that each variable appears in its own column.
+
+Consider `df2`, an "untidy" way to represent *part* of the `iris` data frame; specifically just the `Species` and `Sepal.Length`. 
+
+Run the code block below to see the first six rows of `df2`, then use it to further explore the data set and its format.
+
+(If you cannot see all the columns, you can use the click on the black triangle in the upper-right of the data frame, make the font on your web-browser smaller, or widen the web-browser window)
+```{r df2-exercise, exercise=TRUE,exercise.lines=5}
+head(df2)
+```
+
+In the format above, ***all*** the measurements are sepal lengths, and the column title indicates the species of the flower. 
+
+Before seeing an explanation, can you explain in your own words how we violate our second condition for tidy format?
+```{r question-untidy-2}
+question("Ready to see an explanation?",
+answer("Yes.", correct = TRUE),
+post_message = "Notice the columns are trying to record two things at once: the species of the flower, as well as that flower's sepal length. This example uses three columns to record only two measurements, so we cannot be satisfying the condition that each measurement corresponds to its own column. If we were in tidy format, we would use exactly ***two*** columns to record these ***two*** variables!"
+)
+```
+
+
+## Violation 3:
+Recall our third tidy requirement is that each cell contains at most one measurement.
+
+Consider `df3`, a third "untidy" way to represent the `iris` data frame. Use the code block below to explore the data frame called `df3` and try to come up with a clear explanation for *why* it is not in tidy format.
+
+(If you cannot see all the columns, you can use the click on the black triangle in the upper-right of the data frame, make the font on your web-browser smaller, or widen the web-browser window)
+```{r df3-exercise, exercise=TRUE,exercise.lines=5}
+# Explore df3 here;
+```
+
+```{r df3-exercise-hint}
+head(df3)
+```
+**Note:** Again row in the data set above does correspond to a single flower, so we are satisfying the first condition!
+
+Before seeing an explanation, can you explain in your own words how we violate our third requirement for tidy format?
+```{r question-untidy-3}
+question("Ready to see an explanation?",
+answer("Yes.", correct = TRUE),
+post_message = "This one might be easier to catch.  The column `Sepal Length_Width` combines the length and width measurements for the sepal of each flower, but separated by an underscore `_`. For example, the `Sepal Length_Width` entry for flower 1 is `5.1_3.5`, indicating this flower has a sepal length of 5.1 and a sepal width of 3.5.<br></br> With data stored in this manner, each cell contains multiple measurements (two, to be precise); this breaks our third tidy condition.  One could also make a good argument that we are breaking the second tidy condition, because the variables of sepal length and sepal width are not each given their own column; they share one!"
+)
+```
+
+## Review exercises
+
+Select all that apply: Which tidy requirements are violated.
+
+Select which is *not* a tidy requirement.
+
+Real world example (who data? Covid data?)
+
+## Conclusions
+Notes, comments, summaries.
+
+Links to related exercises and resources.
+
+
+## References
+<div id="refs"></div>
+

@@ -1,0 +1,398 @@
+---
+title: "`tidy`-ing Data Tutorial"
+output: learnr::tutorial
+runtime: shiny_prerendered
+bibliography: references.bib
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+knitr::opts_chunk$set(echo = FALSE)
+
+df1<- iris %>% mutate(flower_ID = 1:150) %>%
+    pivot_longer(
+        cols=c("Sepal.Length","Sepal.Width"),
+        names_to ="Sepal.Measurement.Type",
+        values_to = "Sepal.Measurement"
+    ) %>% select(flower_ID, Species, Sepal.Measurement.Type, Sepal.Measurement, Petal.Length, Petal.Width)
+
+df2<-data.frame(setosa = iris$Sepal.Length[1:50],
+           versicolor = iris$Sepal.Length[51:100],
+           virginica = iris$Sepal.Length[101:150])
+
+df3<-iris %>% mutate(flower_ID=1:150) %>%
+    unite("Sepal Length_Width",Sepal.Length:Sepal.Width,
+          sep="_") %>%
+    select(flower_ID, `Sepal Length_Width`, Petal.Length, Petal.Width)
+
+```
+
+## Introduction
+### Reviewing the definition of `tidy`
+Many workflows in R, from plotting to running $t$-tests, expect the format of our data to be "tidy."  Right... what is that again?
+
+***Tidy data is simply a specific way of organizing a data set.***
+
+***
+***
+
+Hadley Wickham^[Hadley Wickham is one of the founders and creators of the `tidyverse` packages we use so often.] defines tidy data format as having three requirements (@Wickham2017R):
+
+> 1. Every *row* corresponds to an observation (i.e., it represents the measurements for a single experimental unit)
+> 2. Every variable (or measurement) appears in its own **column** 
+> 3. Each cell (row/column pair) contains at most one value
+
+***
+***
+
+*Remark*: For requirement 3, I say "at most one value" to account for potential missing data.
+
+Recall that the iris data set is already in tidy format:
+```{r}
+head(iris)
+```
+
+* each *row* corresponds to a single iris flower collected for this data set;
+* the five columns represent five different measurements (or variables) taken on each flower: the sepal length, sepal width, petal length, petal width, and the species of that flower;
+* inside each cell there is only one value.
+
+### Non-`tidy` data examples
+In the introductory lesson on tidy-format (***link here!!!***), we considered some untidy ways of representing the `iris` data set.  These data frames, `df1`, `df2`, and `df3`, each violated our tidy format conditions in one way or another. These data frames also included a `flower_ID` variable, so that we can track individual flowers when necessary.
+
+In the next three sections, we will introduce functions from the `tidyr` packages that will help us reshape these untidy data frames back into tidy format. We will primarily focus on using `pivot_longer()`, `pivot_wider()` and `extract()`, but keep in mind there are even more options for reshaping data.  We recommend you peruse the [`tidyr`](https://tidyr.tidyverse.org/) documentation, specifically the [vignettes](https://tidyr.tidyverse.org/articles/).
+
+Our challenge in this lesson is to look at the way the data is structured, and understand the code that will fix the "untidy" issue.
+
+Ready to move on?
+
+## Untidy Example 1
+Let's look at `df1` again:
+```{r, echo = T}
+df1 %>% head()
+```
+Look at the `flower_ID` variable; the first two rows have the same flower ID number!  Upon closer inspection, we can see the sepal measurements for each flower are spread over two rows, with the first row recording sepal length and the next row recording sepal width. 
+
+* For example, the first two rows of the data frame above correspond to a single flower, but the sepal length is in row 1 while sepal width is in row 2.  
+
+For tidy data, each flower, and all of its measurements, should be in a single row. Recall,
+
+> **Tidy criterion 1:** every row must correspond to an observation; it represents all the measurements of a single experimental unit.
+
+To fix this kind of situation, we need to use fewer rows and more columns. In other words, we need to make our data frame ***wider***; hence we use `pivot_wider()`.
+
+In a simple use-case of `pivot_wider()`, we do the following:
+
+1. Choose a variable from the data frame to provide *names* for our new columns: `names_from = ...`.   
+2. Choose a variable from the data frame to populate the values of these new columns: `values_from = ...`.
+
+Notice that in `df1`, the `Sepal.Measurement.Type` variable has only two possible values: *Sepal.Length* and *Sepal.Width*.  We want these values to become our new columns headings, so we will use `names_from = Sepal.Measurement.Type`.  The measurements to fill in these columns will be pulled from the `Sepal.Measurement` variable, so we will use `values_from = Sepal.Measurement`.  Let's try it!
+
+**Exercise, `df1`**.  Fill in the arguments below with the appropriate variables, then run the code to see how it looks.
+```{r df1-exercise, exercise=TRUE, exercise.lines=6}
+# We use the dplyr pipe %>% below
+df1 %>%
+    pivot_wider(names_from = ...,
+                values_from = ...)
+```
+
+```{r df1-exercise-hint-1}
+df1 %>%
+    pivot_wider(names_from = Sepal.Measurement.Type,
+                values_from = ...)
+
+
+```
+
+```{r df1-exercise-solution}
+df1 %>%
+    pivot_wider(names_from = Sepal.Measurement.Type,
+                values_from = Sepal.Measurement)
+
+```
+
+For those unfamiliar with `dplyr` and the piping operator `%>%`, the code would look like the following:
+
+```{r df1-exercise-nondplyr, exercise=TRUE, exercise.lines=4}
+pivot_wider(df1,
+            names_from = ...,
+            values_from = ...)
+
+```
+
+#### Main Idea:
+> Use `pivot_wider()` whenever you have a data frame with "too many rows."  In other words, it uses several rows to record the measurements of a single experimental unit. 
+
+
+### You're doing great! 
+#### Let's move to our second example.
+
+
+## Untidy Example 2
+Next let's consider `df2`. This data set only contains part of the `iris` information, specifically the species of the flower and the sepal lengths. It does so, however, in an untidy way!  Since the data set records information on two variables, a tidy version would contain exactly two columns, with a row for each unique flower.  
+
+How does `df2` store this information? Run the code.
+```{r explore-df-two, exercise = T, exercise.lines=5}
+df2 %>% head()
+```
+Notice that we use the column titles to indicate the species, and each cell contains the sepal length information.
+
+Again, here is the main issue: *we are using **three** columns to store the information from **two** variables*.  Again, for tidy data, we should have exactly twoo columns. Recall
+
+> **Tidy criterion 2:** Every variable (or measurement) appears in its own *column*.
+
+***
+
+***Side Note:*** We also fail to satisfy the first tidy requirement.  In the data frame above, each *column* contains a unique sample of 50 irises from the species mentioned in the column title. This mean *each row* has information on three flowers! The first tidy criterion would require each row to correspond to a single flower!
+
+***
+
+### How do we fix it?
+Instead of these ***three*** columns, we should have just **two**: one for species, and one for the sepal length measurement. Reducing the number of columns in a data set makes it *longer* rather than wider, so we will use `pivot_longer()` to fix this problem.
+
+In a simple use-case of `pivot_longer()`, we use `cols = ` to specify all the columns that contain the same underlying measurements (e.g., all three columns of `df2` contain sepal length measurements).  
+
+* The names of the columns we specify become the levels for a new "names" column, which we can rename using `names_to= "new_col_name_1"`.
+* The values in the cells of these specified columns become a new "values" column, which we can rename using `values_to="new_col_name_2"`.
+
+As we remarked in above, `setosa`, `versicolor`, and `virginica` all have the same underlying measurements of sepal length. So let's specify these columns inside `pivot_longer()`.
+
+**Exercise df2.** Replace the column names below (`col1` etc.) with the sepal length columns mentioned in the previous paragraph. Run the code and look at the data frame!
+```{r df2-exercise-1, exercise = TRUE, exercise.lines=5}
+df2 %>%
+    pivot_longer(
+        cols=c("col1","col2","col3")
+    )
+```
+
+```{r df2-exercise-1-hint-1}
+df2 %>%
+    pivot_longer(
+        cols=c("setosa","col2","col3")
+    )
+```
+
+```{r df2-exercise-1-hint-2}
+df2 %>%
+    pivot_longer(
+        cols=c("setosa",
+               "versicolor",
+               "virginica")
+    )
+```
+
+Well, that's looking better, but the column names are poorly chosen.  Let's add the `names_to = ...` and `values_to = ...` arguments to the `pivot_longer()` command. Let's use "Species" for the name column, and "Sepal.Length" for the values column:
+
+```{r df2-exercise-2, exercise = TRUE, exercise.lines=8}
+df2 %>%
+    pivot_longer(
+        cols=c("setosa",
+               "versicolor",
+               "virginica"),
+        names_to = ...,
+        values_to = ...
+    )
+```
+
+```{r df2-exercise-2-hint-1}
+df2 %>%
+    pivot_longer(
+        cols=c("setosa",
+               "versicolor",
+               "virginica"),
+        names_to = "Species",
+        values_to = ...
+    )
+```
+
+```{r df2-exercise-2-hint-2}
+df2 %>%
+    pivot_longer(
+        cols=c("setosa",
+               "versicolor",
+               "virginica"),
+        names_to = "Species",
+        values_to = "Sepal.Length"
+    )
+```
+
+#### Main Idea:
+> Use `pivot_longer()` whenever you have a data frame with "too many columns."  In other words, it uses several columns to record the measurements of a variable.  
+
+### Great work so far!  
+#### Let's continue to our last example.
+
+## Untidy Example 3
+Let's consider `df3`, a third untidy way of representing the iris data set. Explore the format below!
+```{r explore-df3, exercise = T, exercise.lines=3}
+df3 %>% head()
+```
+
+What's the issue?
+
+This one might be easier to catch.  The column `Sepal Length_Width` combines the length and width measurements for the sepal of each flower, but separated by an underscore `_`. For example, the `Sepal Length_Width` entry for flower 1 is `5.1_3.5`, indicating this flower has a sepal length of 5.1 and a sepal width of 3.5.
+
+With data stored in this manner, each cell contains multiple measurements (two, to be precise); this breaks our third tidy condition.  
+
+> Each cell (row/column pair) contains at most one value.
+
+***
+
+***Side Note:*** It is also true that we are breaking the second tidy condition, because the variables of sepal length and sepal width are not each given their own column; they share one!"
+
+***
+
+When cells contain two (or more) pieces of information, we can use the `extract()` function to separate them; however, this does require that we use *regular expressions,* or regex for short. We have a separate lesson on regular expressions, but for now we will avoid the details and just discuss a common "pattern" we can use in these situations.
+
+Notice that the entries of the `Sepal Length_Width` column have two numbers, and they are separated by the underscore `_`.  We want to extract the two numbers on either side of this underscore, and to do so we'll use the regex pattern `(.*)_(.*)`. Here's the rough idea:
+
+* each `(.*)` corresponds to a measurement we want to extract.  In our example, these are our sepal measurements of length and width.
+* the pattern `(.*)_(.*)` tells the extract command that we have two measurements separated by an underscore `_`, and we want to extract them.^[If we had three numbers separated by `_`, like `3.1_5.24_7`, we could use the pattern `(.*)_(.*)_(.*)`.]
+
+Lastly, we need to identify the column containing the multiple measurements (in our case, `Sepal Length_Width`), and then specify the column names for the new columns using `into = ...`.
+
+Below we started the code. Complete it by placing the regex pattern `(.*)_(.*)` inside the appropriate place, and by providing a list of new column names for the `into =` argument.
+
+```{r exercise-df3, exercise = TRUE, exercise.lines=6}
+df3 %>%
+    extract(col = `Sepal Length_Width`,
+            regex = "..place pattern..",
+            into = c("col_name_1","col_name_2"))
+# Notice we provide two column names because we are extracting two numbers!
+```
+
+```{r exercise-df3-hint-1}
+df3 %>%
+    extract(col = `Sepal Length_Width`,
+            regex = "(.*)_(.*)",
+            into = c("col_name_1","col_name_2"))
+# Notice we provide two column names because we are extracting two numbers!
+```
+
+```{r exercise-df3-hint-2}
+df3 %>%
+    extract(col = `Sepal Length_Width`,
+            regex = "(.*)_(.*)",
+            into = c("Sepal.Length","col_name_2"))
+# Notice we provide two column names because we are extracting two numbers!
+```
+
+```{r exercise-df3-solution}
+df3 %>%
+    extract(col = `Sepal Length_Width`,
+            regex = "(.*)_(.*)",
+            into = c("Sepal.Length","Sepal.Width"))
+# Notice we provide two column names because we are extracting two numbers!
+```
+
+
+#### Main Idea:
+> When you have more than one measurement appearing in a cell, use `extract()` and an appropriate regex pattern to break the contents of those cells into two or more columns.
+
+***Note:*** regex expressions can get tricky,^[One way regex can get tricky is that some characters that separate measurements need to be "escaped".  If the format were `2.5|3.1`, using `|` to separate measurements, I would need to use `(.*)\\|(.*)` as my pattern. The `\\` before the `|` indicates that I want the text character `|` and not something else. Don't stress, just get some extra help if your best guess at a regex pattern is not working! Also, try the regex lesson (LINK HERE!!!!)] so reach out for some help if your data is stored in a way that does not closely resemble our example above.
+
+
+### Well done! 
+#### Are you ready to practice?
+
+
+## Review exercises
+
+who data separated by underscores, three groups.
+
+something for pivot_longer
+
+something for pivot_wider
+
+Grace's data set, or something similar?
+
+## Conclusions
+Notes, comments, summaries.
+
+Links to related exercises and resources.
+
+
+### References
+<div id="refs"></div>
+
+***
+## Example exercises
+
+### Exercise 
+
+*Here's a simple exercise with an empty code chunk provided for entering the answer.*
+
+Write the R code required to add two plus two:
+
+```{r two-plus-two, exercise=TRUE}
+
+```
+
+### Exercise with Code
+
+*Here's an exercise with some prepopulated code as well as `exercise.lines = 5` to provide a bit more initial room to work.*
+
+Now write a function that adds any two numbers and then call it:
+
+```{r add-function, exercise=TRUE, exercise.lines = 5}
+add <- function() {
+  
+}
+```
+
+## Topic 2
+
+### Exercise with Hint
+
+*Here's an exercise where the chunk is pre-evaluated via the `exercise.eval` option (so the user can see the default output we'd like them to customize). We also add a "hint" to the correct solution via the chunk immediate below labeled `print-limit-hint`.*
+
+Modify the following code to limit the number of rows printed to 5:
+
+```{r print-limit, exercise=TRUE, exercise.eval=TRUE}
+mtcars
+```
+
+```{r print-limit-hint}
+head(mtcars)
+```
+
+
+### Shiny Example
+```{r, echo=FALSE}
+sliderInput("bins", "Number of bins:", min = 1, max = 50, value = 30)
+plotOutput("distPlot")
+```
+
+```{r, context="server"}
+output$distPlot <- renderPlot({
+  x <- faithful[, 2]  # Old Faithful Geyser data
+  bins <- seq(min(x), max(x), length.out = input$bins + 1)
+  hist(x, breaks = bins, col = 'darkgray', border = 'white')
+})
+```
+
+### Quiz
+
+*You can include any number of single or multiple choice questions as a quiz. Use the `question` function to define a question and the `quiz` function for grouping multiple questions together.*
+
+Some questions to verify that you understand the purposes of various base and recommended R packages:
+
+```{r quiz}
+quiz(
+  question("Which package contains functions for installing other R packages?",
+    answer("base"),
+    answer("tools"),
+    answer("utils", correct = TRUE),
+    answer("codetools")
+  ),
+  question("Which of the R packages listed below are used to create plots?",
+    answer("lattice", correct = TRUE),
+    answer("tools"),
+    answer("stats"),
+    answer("grid", correct = TRUE)
+  )
+)
+```
+

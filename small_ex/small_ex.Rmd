@@ -1,0 +1,40 @@
+---
+title: "Example `learnr` tutorial"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+
+## Topic 1
+
+### Exercise 
+
+*Here's a simple exercise with an empty code chunk provided for entering the answer.*
+
+Write the R code required to add two plus two:
+
+```{r two-plus-two, exercise=TRUE}
+
+```
+
+
+## Topic 2
+
+### Quiz Questions
+
+```{r quiz}
+quiz(
+  question("How much time does it take to study for an exam?",
+    answer("One hour."),
+    answer("Two hours."),
+    answer("It's best to do 30 minutes a day for at least a week.", correct = TRUE),
+    answer("Who studies?")
+  )
+)
+```
+

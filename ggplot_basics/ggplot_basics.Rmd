@@ -1,5 +1,6 @@
 ---
 title: "Basics of `ggplot2`"
+author: (created by P. Lombardo)
 output: learnr::tutorial
 runtime: shiny_prerendered
 ---
@@ -168,6 +169,8 @@ ggplot(data = iris,
 **Explore:** Try changing the color aesthetic to depend on a different variable, like `Sepal.Width`.  What happens? Can you explain *why* this happens?
 
 Notice that when adding a color aesthetic to the plot, a legend is automatically created and appended to the side.^[We can change the position of the legend; another time, perhaps.]
+
+***Optional Note:*** For reference, common aesthetics in ggplot include: *x, y, color, fill,* and *group*.  However, new geometries can also require new aesthetics. For example, `geom_errorbar()` will add error bars to plots, but it requires the new aesthetics of `ymin` and `ymax` to plot the bars properly.
 
 
 ## Finishing touches
@@ -381,4 +384,8 @@ The `ggplot2` package can do even more, and has even more flexibility when combi
 
 * put lesson links here.
 
+
+Notes, comments, summaries.
+
+Links to related exercises and resources.
 
