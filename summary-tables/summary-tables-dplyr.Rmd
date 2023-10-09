@@ -1,0 +1,20 @@
+---
+title: "Making Summary Tables in the Tidyverse"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(dplyr)
+library(tidyr)
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Categorical data with table() and prop.table()
+
+## Quantitative data
+
+## Categorical and Quantitative data, group_by() and summarise()
+
+
