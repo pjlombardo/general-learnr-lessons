@@ -8,13 +8,90 @@ runtime: shiny_prerendered
 library(learnr)
 library(dplyr)
 library(tidyr)
+library(knitr)
+library(kableExtra)
 knitr::opts_chunk$set(echo = FALSE)
+titanic<-read.csv('data/titanic2.csv', header = T,
+                  stringsAsFactors = T)
+titanic<-titanic %>% mutate(
+    Fare = round(Fare,2)
+)
 ```
 
 ## Categorical data with table() and prop.table()
+```{r}
+# Just counts
+titanic %>% with(
+    table(Sex, Survived)
+)
+
+titanic %>% with(
+    table(Sex, Survived)
+) %>% addmargins()
+
+# Row percentages
+titanic %>% with(
+    table(Sex, Survived)
+) %>% prop.table(margin =1)
+
+#column percentages
+titanic %>% with(
+    table(Sex, Survived)
+) %>% prop.table(margin =2)
+
+# total sample
+titanic %>% with(
+    table(Sex, Survived)
+) %>% prop.table()
+```
+
 
 ## Quantitative data
+```{r}
+titanic %>% summarise(meanFare = mean(Fare),
+                      sdFare = sd(Fare),
+                      IQR_age = IQR(Age))
+
+titanic %>% summarise(meanFare = mean(Fare),
+                      sdFare = sd(Fare),
+                      IQR_age = IQR(Age))
+
+titanic %>% summarise(meanFare = mean(Fare),
+                      sdFare = sd(Fare),
+                      IQR_age = IQR(Age)) %>%
+    pivot_longer(cols=everything())
+```
+
 
 ## Categorical and Quantitative data, group_by() and summarise()
+```{r}
+titanic %>% group_by(Pclass) %>%
+    summarize(meanAge = mean(Age),
+              meanFare = mean(Fare),
+              perc_total = n()/nrow(titanic),
+              Percent_Survived = sum(Survived=="Yes")/n(),
+              sample_size = n())
+library(tidyverse)
+titanic %>% group_by(Pclass) %>%
+    summarize(meanAge = mean(Age),
+              meanFare = mean(Fare),
+              perc_total = n()/nrow(titanic),
+              Percent_Survived = sum(Survived=="Yes")/n(),
+              sample_size = n()) %>%
+    pivot_longer(cols = -Pclass, names_to = "Summary") %>%
+    mutate(Pclass = paste("Passenger Class = ",Pclass)) %>%
+    pivot_wider(names_from = Pclass,
+                values_from = value) %>%
+    kbl() %>% kable_styling("striped")
+```
+Using "Export" can save as image, or copy to clipboard and paste into a google doc.
+
+*Rounding can be a pain in the ass this way.*
+```{r}
+remove_trail_zero<-function(x){
+    gsub("\\d+\\.\\d*[1-9](0+)","",as.character(x))
+}
+remove_trail_zero(0.0302123000)
+```
 
 

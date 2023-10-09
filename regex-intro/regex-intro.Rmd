@@ -27,7 +27,7 @@ replace patterns: `sub()` (first match) and `gsub()` (all matches)
 
 ### Ends with
 
-### Character groups
+### Character groups for replacing...
 
 ### More resources
 
