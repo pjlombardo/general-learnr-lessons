@@ -1,6 +1,6 @@
 ---
 title: "Basics of `ggplot2`"
-author: (created by P. Lombardo)
+author: (Created by P. Lombardo)
 output: learnr::tutorial
 runtime: shiny_prerendered
 ---
