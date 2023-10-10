@@ -6,8 +6,7 @@ runtime: shiny_prerendered
 
 ```{r setup, include=FALSE}
 library(learnr)
-library(dplyr)
-library(tidyr)
+library(tidyverse)
 library(knitr)
 library(kableExtra)
 knitr::opts_chunk$set(echo = FALSE)
@@ -71,7 +70,7 @@ titanic %>% group_by(Pclass) %>%
               perc_total = n()/nrow(titanic),
               Percent_Survived = sum(Survived=="Yes")/n(),
               sample_size = n())
-library(tidyverse)
+
 titanic %>% group_by(Pclass) %>%
     summarize(meanAge = mean(Age),
               meanFare = mean(Fare),
@@ -87,11 +86,21 @@ titanic %>% group_by(Pclass) %>%
 Using "Export" can save as image, or copy to clipboard and paste into a google doc.
 
 *Rounding can be a pain in the ass this way.*
+Fix:
+
+* Before switching columns and rows, round each value and then change it to a character, which automatically drops the trailing zeros.
+* Use `t()` to switch columns and rows
+* Send to `kbl()` to create the table.
 ```{r}
-remove_trail_zero<-function(x){
-    gsub("\\d+\\.\\d*[1-9](0+)","",as.character(x))
-}
-remove_trail_zero(0.0302123000)
+titanic %>% group_by(Pclass) %>%
+    summarize(`Average Age` = mean(Age) %>% round(1) %>%as.character(),
+              `Average Fare` = mean(Fare) %>% round(2)%>%as.character(),
+              `Percent of all aboard` = (n()/nrow(titanic)) %>%round(3) %>% as.character(),
+              `Survival Rate` = (sum(Survived=="Yes")/n()) %>%round(3) %>% as.character(),
+              `Total` = as.integer(n()) %>%as.character()) %>%
+    mutate(Pclass = paste("Passenger Class",Pclass)) %>%
+    remove_rownames() %>% column_to_rownames(var="Pclass") %>%
+    t() %>% kbl() %>% kable_styling("striped")
 ```
 
 
