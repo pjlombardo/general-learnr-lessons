@@ -8,26 +8,34 @@ runtime: shiny_prerendered
 library(learnr)
 library(dplyr)
 library(ggplot2)
+library(stringr)
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
 ## R-based commands for regular expressions
+`sentences` from `stringr` package
+
+use `str_view()` to explore matches?
+
 find locations of matches: `grep()`, `grepl()`.
+
+* sentences[grepl("[Cc]ats{0,1}", sentences)]
 
 replace patterns: `sub()` (first match) and `gsub()` (all matches)
 
-## Simple examples
+## Simple extensions
 
-## More advanced regular expressions
-
-[regex101.com](https://regex101.com/)
-[regex lessons](https://regexone.com/)
+### Collections of characters with []
 
 ### Starts with
 
 ### Ends with
 
-### Character groups for replacing...?
+## Or alternatives
+
+### Capture groups for replacing...?
+Remove a trailing zero
+`gsub("([\\.0-9]*[1-9]+)(0+)","\\1","0.03302010023000")`
 
 ### More resources
 
