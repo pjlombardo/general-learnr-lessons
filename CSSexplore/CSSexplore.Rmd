@@ -57,7 +57,7 @@ mtcars
 ```
 
 
-#### Answer
+#### Quiz
 
 ```{r quiz3}
 quiz(
