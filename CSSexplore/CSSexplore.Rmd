@@ -14,6 +14,19 @@ knitr::opts_chunk$set(echo = FALSE)
 ```
 
 
+<!-- Have to put javascript functions here.  Better way? -->
+```{js, echo=FALSE}
+function toggleAnswer(){
+    const showAns = document.querySelector(".exer-block")
+    if (showAns.style.display==='none'){
+        showAns.style.display = "block";
+    } else {
+        showAns.style.display = "none";
+    }
+}
+```
+
+
 ## Exploring some html options
 
 Here is some "paragraph" text.
@@ -47,7 +60,6 @@ And we can type outside of the exercise
 
 
 
-[drop-down click?]
 
 ### Exercise reveal answer {.tabset .tabset-fade}
 This is done through R markdown by specifying `{.tabset}` after a section. The subsections that follow end up in a tabset fashion. Could be used for Question/Answer reveals. You can also try `{.tabset-dropdown}`.
@@ -80,7 +92,13 @@ quiz(
 
 
 ## Playing with html stuff
-
+!!!! DOESN"T WORK WITH MULTIPLE BUTTONS! ~~~
+<button class="exer-button" onclick="toggleAnswer()">
+    Exercise 2!
+</button>
+<div class="exer-block">
+Testing it here
+</div>
 ### Exercise 
 
 #### Test
