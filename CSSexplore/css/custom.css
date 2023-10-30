@@ -24,12 +24,15 @@ p {
   color: red;
 }
 
-summary {
+details summary { 
+  cursor: pointer;
   color: rgb(154, 7, 7);
   font-size: 16px;
   font-style: italic;
   font-family: Georgia;
 }
+
+
 
 /* Can change a header to look like a colored tab */
 /* h4 {
