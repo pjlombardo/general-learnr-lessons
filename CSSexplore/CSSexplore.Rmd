@@ -2,6 +2,7 @@
 title: "Example `learnr` tutorial with CSS"
 output: learnr::tutorial
 css: css/custom.css
+js: js/main.js
 runtime: shiny_prerendered
 ---
 
@@ -22,7 +23,7 @@ Here is some "paragraph" text.
 #### A heading 4
 with some text.
 
-<button class="exer-button">
+<button class="exer-button" onclick="toggleAnswer()">
     Exercise!
 </button>
 <div class="exer-block">
