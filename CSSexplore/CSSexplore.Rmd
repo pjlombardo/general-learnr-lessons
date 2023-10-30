@@ -93,6 +93,7 @@ quiz(
 
 ## Playing with html stuff
 !!!! DOESN"T WORK WITH MULTIPLE BUTTONS! ~~~
+
 <button class="exer-button" onclick="toggleAnswer()">
     Exercise 2!
 </button>
@@ -100,6 +101,17 @@ quiz(
 Testing it here
 </div>
 ### Exercise 
+
+<button class="exer-button">
+    Question!
+</button>
+<!-- <div class="exer-block"> -->
+<details style="display:list-item">
+  <summary>$\blacktriangleright$ Show answer ...</summary>
+  <p>Here is our long answer.</p>
+</details>
+<!-- </div> -->
+
 
 #### Test
 Here is some text
