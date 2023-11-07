@@ -188,6 +188,8 @@ Since we are adding a layer, we put a `+` after our last line of code. Then, aft
 
 Let's see if your `ggplot2` intuition is developing. Run the code below, and then make the necessary changes provide meaningful labels to the axes and the title.
 
+(*Note:* In science, titles are not used for plots.)
+
 ```{r ggplot-axis-labels, exercise=TRUE, exercise.lines=8}
 ggplot(data = iris, 
        aes(x = Petal.Length,
