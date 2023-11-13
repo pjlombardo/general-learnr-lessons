@@ -188,7 +188,10 @@ Since we are adding a layer, we put a `+` after our last line of code. Then, aft
 
 Let's see if your `ggplot2` intuition is developing. Run the code below, and then make the necessary changes provide meaningful labels to the axes and the title.
 
-(*Note:* In science, titles are not used for plots.)
+***
+**Important Note:** figures in science publications *do not use titles!* 
+
+***
 
 ```{r ggplot-axis-labels, exercise=TRUE, exercise.lines=8}
 ggplot(data = iris, 
@@ -377,7 +380,7 @@ ggplot(data = mtcars,
 
 We learned how to sequentially build a basic plot using the `ggplot2` package. This involved:
 
-* Making a blank canvas and ssociating a data frame with `ggplot(data= df)`
+* Making a blank canvas and associating a data frame with `ggplot(data= df)`
 * Adding variables to axes with `aes()`
 * Adding geometries, like `geom_point()`, and
 * Adding axis labels with `labs()`.
