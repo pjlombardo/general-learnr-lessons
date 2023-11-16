@@ -62,10 +62,15 @@ head(iris,3)
 
 When we know the data frame from which we want to build our plot (and it's in `tidy`-format, more on this later), we can add this to the code for out plot.  
 
-In our painting analogy, this is like putting pain on a pallete. Setting `data = iris` allows us to pull data from the `iris` data frame and use it to build the plot. Let's add some simple dimension to our blank canvas by
+In our painting analogy, this is like putting pain on a palette. Setting `data = iris` allows us to pull data from the `iris` data frame and use it to build the plot. Let's add some simple dimension to our blank canvas by
 
-1. specifying a data frame (painting pallete)
+1. specifying a data frame (painting palette)
 2. specifying which variables we want to appear on our axes.
+
+***
+**Note:** In science, it is convention to put your independent variable (explanatory variable) on the $x$-axis, and the dependent variable (response variable) on the $y$-axis.  Please keep that in mind.
+
+***
 
 In the code below, replace the `...` with two variables of interest; specifically, put `Sepal.Width` on the $y$-axis and `Petal.Length` on the $x$-axis:
 
@@ -143,7 +148,7 @@ ggplot(data = iris,
     geom_point()
 ```
 
-Suppose, however, we'd like to color these points according the `Species` of iris. 
+Suppose, however, we'd like to color these points according the `Species` of iris.  This could help us explore whether there are similarities for flowers of the same species, and differences between species.
 
 > **Important Concept**: Any component of the plot that depends on data *must be assigned to an "aesthetic", so inside `aes()`*.
 
@@ -182,7 +187,7 @@ The `ggplot2` package allows for nearly endless modifications and finishing touc
 * adding text and shape annotations on top of the plot
 * applying general [plotting themes](https://ggplot2.tidyverse.org/reference/ggtheme.html) 
 
-In the interests of time and attention span, however, we will consider one more useful step: *adding axis labels to the plot*.
+In the interests of time and attention span, however, we will consider one more useful step: *adding axis labels to the plot*. By default, ggplot labels the $x$ and $y$-axes with the variables that appear in the data frame, which may not be what you want to appear.
 
 Since we are adding a layer, we put a `+` after our last line of code. Then, after hitting enter to get to the next line, we will use the `labs()` element to change our axes. 
 
@@ -298,7 +303,7 @@ question("True or False: the command written in Code Block 1 would result in an 
 ***
 
 ### Final Exercise
-For the final exercise, I challenge you to *recreate* a plot using a new data frame and  what you have learned from this tutorial. Our data will come from the `mtcars` data frame, which collected information on a collection of cars featured in the 1974 *Motor Trend* magazine. 
+For the final exercise, I challenge you to *recreate* a plot using a new data frame and  what you have learned from this tutorial. Our data will come from the `mtcars` data frame, which contains information on a collection of cars featured in the 1974 *Motor Trend* magazine. 
 
 The `mtcars` data frame contains the following variables (among others):
 
